@@ -29,7 +29,7 @@ void setup() {
   println("screenScale = "+screenScale);
 
   //  pg = createGraphics(1920, 1920);
-
+  //Checking github
   setupScrollbars();
 
   smooth(8); //2,3,4, or 8
@@ -96,4 +96,3 @@ void draw() {
   text(targetPEVNum, 263, 712);
   text(int(maxSpeedKPH/10), 263, 736);
 }
-
