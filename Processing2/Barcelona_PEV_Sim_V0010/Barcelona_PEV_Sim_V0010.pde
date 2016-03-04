@@ -10,6 +10,7 @@ PImage img_BG;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
 int totalPEVNum = 10;
+int totalSpotNum = 2;
 int targetPEVNum;
 int totalRoadNum;
 float scaleMeterPerPixel = 2.15952; //meter per pixel in processing; meter per mm in rhino
@@ -17,8 +18,14 @@ float ScrollbarRatioPEVNum = 0.12;
 float ScrollbarRatioPEVSpeed = 0.5;
 Roads roads;
 PEVs PEVs;
+Spots Spots;
 boolean drawRoads = false;
-
+boolean drawPath = false;
+ArrayList <ArrayList<Node>> paths;
+Path path;
+Spots pickups;
+Spots destinations;
+boolean presenceOfPath = false;
 
 void setup() {
 
@@ -29,7 +36,7 @@ void setup() {
   println("screenScale = "+screenScale);
 
   //  pg = createGraphics(1920, 1920);
-  //Checking github
+
   setupScrollbars();
 
   smooth(8); //2,3,4, or 8
@@ -44,6 +51,43 @@ void setup() {
   // add PEVs
   PEVs = new PEVs();
   PEVs.initiate(totalPEVNum);
+  
+  //add Pickup Spots
+  Spots = new Spots();
+  Spots.initiate(totalSpotNum);
+  pickups = new Spots();
+  destinations = new Spots();
+  path = new Path();
+  
+  for (Spot spot: Spots.Spots){
+     if (spot.status == 0){
+       pickups.addSpot(spot);
+     }
+     
+     if (spot.status == 1){
+       destinations.addSpot(spot);   
+     }
+  }
+  
+  // Creating Paths
+  if (pickups.Spots.size() > 1 && destinations.Spots.size() > 1 ){
+      paths = new ArrayList<ArrayList<Node>>();
+      int numberOfPaths = 0;
+      if (pickups.Spots.size() < destinations.Spots.size()){
+          numberOfPaths = pickups.Spots.size();
+      }
+      else{numberOfPaths = destinations.Spots.size();}
+      
+      for (int i = 0; i<= numberOfPaths; i++){
+          path.findPath(pickups.Spots.get(i), destinations.Spots.get(i));
+          paths.add(path.pathOfNodes);
+          if (!presenceOfPath){presenceOfPath = true;}
+      }
+   
+      
+      
+  }
+  
 }
 
 void draw() {
@@ -64,10 +108,22 @@ void draw() {
   if (drawRoads) {
     roads.drawRoads();
   }
+  
+  if (drawPath && presenceOfPath){
+    for (ArrayList<Node> eachPath: paths){
+    path.drawPath(eachPath);
+    }
+  }
+  
+  
+  
+  
+  
 
   // run PEVs
   PEVs.run();
-
+  Spots.run();
+  
   //  image(pg, 0, 0);
 
   // show frameRate

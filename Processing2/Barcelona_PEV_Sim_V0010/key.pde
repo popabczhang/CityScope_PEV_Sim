@@ -3,7 +3,11 @@ void keyPressed() {
     case 'r': 
       drawRoads = !drawRoads;
       break;
+    case 'p':
+      drawPath = !drawPath;
+      break;
   }
+  
   
 //  if (key == CODED) { 
 //    if (keyCode == LEFT) {
@@ -28,5 +32,3 @@ void keyPressed() {
 //    return 0;
 //  }
 //}
-
-

@@ -48,7 +48,7 @@ class Road {
       roadPts[i] = new PVector(x, y, z);
     }
   }
-
+// This will be an important method for analyzing which PEVS are closest to a certain location
   PVector getPt(float _t) {
     float t = _t;
     int l = roadPts.length;
@@ -61,17 +61,17 @@ class Road {
     }
   }
 
-  //PVector getNextPt(float _t) {
-  //  float t = _t;
-  //  int l = roadPts.length;
-  //  if ( t < 0.0 || t > 1.0 ) {
-  //    println("\"t\" out of range! \"t\" must be between 0.0 and 1.0. Now t = " + t);
-  //    return null;
-  //  } else {
-  //    int n = int((l-1)*t);
-  //    return roadPts[n+1];
-  //  }
-  //}
+  PVector getNextPt(float _t) {
+    float t = _t;
+    int l = roadPts.length;
+    if ( t < 0.0 || t > 1.0 ) {
+      println("\"t\" out of range! \"t\" must be between 0.0 and 1.0. Now t = " + t);
+      return null;
+    } else {
+      int n = int((l-1)*t);
+      return roadPts[n+1];
+    }
+  }
   
   PVector getTangentVector(float _t) {
     float t = _t;
@@ -99,11 +99,6 @@ class Road {
 
   void drawRoad() {
     for (int i = 0; i < ptNum - 1; i ++) {
-      //if (directionType == 0) {
-      //  stroke(0, 255, 255); //one way = cyan
-      //} else {
-      //  stroke(0, 0, 255); //two way = blue
-      //}
       stroke(0, 255, 255); //cyan
       strokeWeight(1.0); 
       line(roadPts[i].x, roadPts[i].y, roadPts[i+1].x, roadPts[i+1].y);

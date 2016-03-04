@@ -1,49 +1,35 @@
-// Andorra PEV Simulation v0010
+// Barcelona PEV Simulation v0010
 // for MIT Media Lab, Changing Place Group, CityScope Project
 
-// by Yan Zhang (Ryan) <ryanz@mit.edu>
-// Dec.8th.2015
-
-
-float maxSpeedKPH = 200.0; //units: kph  20.0 kph
-float maxSpeedMPS = maxSpeedKPH * 1000.0 / 60.0 / 60.0; //20.0 KPH = 5.55556 MPS
-float maxSpeedPPS = maxSpeedMPS / scaleMeterPerPixel; 
-float roadConnectionTolerance = 10.0; //pxl; smaller than 1.0 will cause error
-float stateChangeOdd = 0.0075;
-
-class PEV {
+// by Udgam Goyal <udgam@mit.edu>
+// Feb.8th.2015
+class Spot {
 
   //int id; //PEV agent id
-  int status; //0 - empty; 1 - psg; 2 - pkg; 3 - psg & pkg
+  int status; //0 = Pick Up, 1 = Location
   //int roadID; //the road the PEV is currently on
   Road road; //current road object
   float t; //t location of the current road;
-  PVector locationPt; //location coordination on the canvas, LOCATES PEV
+  PVector locationPt; //location coordination on the canvas
   PVector locationTangent;
-  float rotation; //rotation in radius on the canvas
   float speedT; //current speed; units: t per frame
-  PImage img_PEV;
 
-  PEV(Road _road, float _t) {
+  Spot(Road _road, float _t) {
     //id = _id;
     //roadID = _roadID;
     //road = roads.roads.get(roadID);
     road = _road;
-    t = _t; //location within road; will be important for distance between location and PEV
-    status = 0;
+    t = _t;
+    status = int(random(0,2));
     locationPt = road.getPt(t);
-    speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-    img_PEV = imgs_PEV.get(int(random(0, imgs_PEV.size()-1)+0.5));
+    speedT = 0; //speedT unit: t per frame
   }
+void run() {
 
-  void run() {
-
-    move();
+    //move();
 
     getDirection();
     
-    changeState();
-
     render();
   }
 
@@ -76,9 +62,9 @@ class PEV {
             //println("pass if 02");
             nextRoads.add(tmpRoad);
           }
+          }
         }
         //i ++;
-      }
       //println("find: "+nextRoads.size());
 
       // pick one next road
@@ -102,9 +88,9 @@ class PEV {
     // get rotation
     locationPt = road.getPt(t);
     locationTangent = road.getTangentVector(t);
-    rotation = PVector.angleBetween(new PVector(1.0, 0.0, 0.0), locationTangent);
+    //rotation = PVector.angleBetween(new PVector(1.0, 0.0, 0.0), locationTangent);
     if (locationTangent.y < 0) {
-      rotation = -rotation;
+      //rotation = -rotation;
     }
 
     //// drawn tangent
@@ -122,20 +108,15 @@ class PEV {
     //println("rotation: " + rotation);
   }
   
-  void changeState(){
-    float rnd = random(0.0, 1.0);
-    if (rnd <= stateChangeOdd) {
-      int n = int(random(0, imgs_PEV.size()-1)+0.5);
-      img_PEV = imgs_PEV.get(n);
-    }
-  }
-
   void render() {
   
     pushMatrix();
     translate(locationPt.x, locationPt.y);
-    rotate(rotation);
-
+    if (status==0){
+    fill(255,240,0);
+    }
+    else{fill(255,0,0);}
+    ellipse(0,0, 10,10);
     //// draw direction line
     //stroke(0, 255, 0); 
     //strokeWeight(0.5); 
@@ -143,8 +124,7 @@ class PEV {
 
     // draw PEV img
     scale(0.3);
-    translate(-img_PEV.width/2, -img_PEV.height/2);
-    image(img_PEV, 0, 0);
+    //translate(-img_PEV.width/2, -img_PEV.height/2);
     popMatrix();
     
   }
