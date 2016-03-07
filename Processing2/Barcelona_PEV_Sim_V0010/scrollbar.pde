@@ -22,13 +22,12 @@ void setupScrollbars() {
 
   hs[0].setPos(ScrollbarRatioPEVNum);
   hs[1].setPos(ScrollbarRatioPEVSpeed);
-
 }
 
 void drawScrollbars() {
-  
+
   textSize(10);
-  
+
   ScrollbarRatioPEVNum = hs[0].getPos()*1.0;
   ScrollbarRatioPEVSpeed = hs[1].getPos()*1.0;
 
@@ -40,7 +39,7 @@ void drawScrollbars() {
     textAlign(LEFT);
     //text(labels[i],x+w+spacing,y+i*(h+spacing)+spacing);
     //text(labels[i]+": "+hs[i].getPos(),x+w+spacing,y+i*(h+spacing)+spacing);
-    text(hs[i].getPos(),34,713+i*22);
+    text(hs[i].getPos(), 34, 713+i*22);
   }
 }
 
@@ -71,24 +70,23 @@ class HScrollbar
   }
 
   void update() {
-    if(over()) {
+    if (over()) {
       over = true;
-    } 
-    else {
+    } else {
       over = false;
     }
-    if(mousePressed && over) {
+    if (mousePressed && over) {
       //scrollbar = true;
       locked = true;
     }
-    if(!mousePressed) {
+    if (!mousePressed) {
       locked = false;
       //scrollbar = false;
     }
-    if(locked) {
+    if (locked) {
       newspos = constrain(int(mouseX/screenScale)-sheight/2, sposMin, sposMax);
     }
-    if(abs(newspos - spos) > 0) {
+    if (abs(newspos - spos) > 0) {
       spos = spos + (newspos-spos)/loose;
     }
   }
@@ -98,11 +96,10 @@ class HScrollbar
   }
 
   boolean over() {
-    if(mouseX/screenScale > xpos && mouseX/screenScale < xpos+swidth &&
+    if (mouseX/screenScale > xpos && mouseX/screenScale < xpos+swidth &&
       mouseY/screenScale > ypos && mouseY/screenScale < ypos+sheight) {
       return true;
-    } 
-    else {
+    } else {
       return false;
     }
   }
@@ -113,10 +110,9 @@ class HScrollbar
     strokeWeight(0.75);
     rectMode(CORNER);
     rect(xpos, ypos, swidth, sheight);
-    if(over || locked) {
+    if (over || locked) {
       fill(153, 102, 0);
-    } 
-    else {
+    } else {
       fill(102, 102, 102);
     }
     rect(spos, ypos, sheight, sheight);

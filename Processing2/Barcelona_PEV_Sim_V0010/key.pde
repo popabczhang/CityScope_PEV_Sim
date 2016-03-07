@@ -1,28 +1,28 @@
 void keyPressed() {
   switch(key) {
-    case 'r': 
-      drawRoads = !drawRoads;
-      break;
-    case 'p':
-      drawPath = !drawPath;
-      break;
+  case 'r': 
+    drawRoads = !drawRoads;
+    break;
+  case 'p':
+    drawPath = !drawPath;
+    break;
   }
-  
-  
-//  if (key == CODED) { 
-//    if (keyCode == LEFT) {
-//      screenMoveX--;
-//    }  
-//    if (keyCode == RIGHT) {
-//      screenMoveX++;
-//    }  
-//    if (keyCode == DOWN) {
-//      screenMoveY++;
-//    }  
-//    if (keyCode == UP) {
-//      screenMoveY--;
-//    }
-//  }
+
+
+  //  if (key == CODED) { 
+  //    if (keyCode == LEFT) {
+  //      screenMoveX--;
+  //    }  
+  //    if (keyCode == RIGHT) {
+  //      screenMoveX++;
+  //    }  
+  //    if (keyCode == DOWN) {
+  //      screenMoveY++;
+  //    }  
+  //    if (keyCode == UP) {
+  //      screenMoveY--;
+  //    }
+  //  }
 }
 
 //toggleRoadDraw() {

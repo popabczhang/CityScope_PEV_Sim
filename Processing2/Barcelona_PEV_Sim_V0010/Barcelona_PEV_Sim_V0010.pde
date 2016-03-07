@@ -17,6 +17,7 @@ float scaleMeterPerPixel = 2.15952; //meter per pixel in processing; meter per m
 float ScrollbarRatioPEVNum = 0.12;
 float ScrollbarRatioPEVSpeed = 0.5;
 Roads roads;
+Roads smallerSampleRoads;
 PEVs PEVs;
 Spots Spots;
 boolean drawRoads = false;
@@ -41,17 +42,22 @@ void setup() {
 
   smooth(8); //2,3,4, or 8
 
-    img_BG = loadImage("BG_ALL_75DPI.png");
+  img_BG = loadImage("BG_ALL_75DPI.png");
 
   // add roads
   roadPtFile = "RD_CRV_PTS_151231.txt";
   roads = new Roads();
   roads.addRoadsByRoadPtFile(roadPtFile);
+  smallerSampleRoads = new Roads();
+  smallerSampleRoads.roads.add(roads.roads.get(0));
+  smallerSampleRoads.roads.add(roads.roads.get(1));
+  //println(smallerSampleRoads.roads);
+
 
   // add PEVs
   PEVs = new PEVs();
   PEVs.initiate(totalPEVNum);
-  
+
   //add Pickup Spots
   Spots = new Spots();
   Spots.initiate(totalSpotNum);
@@ -59,36 +65,38 @@ void setup() {
   destinations = new Spots();
   path = new Path();
   path.addNodesToAllNodes(roads);
-  
-  for (Spot spot: Spots.Spots){
-     if (spot.status == 0){
-       pickups.addSpot(spot);
-     }
-     
-     if (spot.status == 1){
-       destinations.addSpot(spot);   
-     }
+
+  for (Spot spot : Spots.Spots) {
+    if (spot.status == 0) {
+      pickups.addSpot(spot);
+    }
+
+    if (spot.status == 1) {
+      destinations.addSpot(spot);
+    }
   }
   println(pickups.Spots.size());
   println(destinations.Spots.size());
   // Creating Paths
-  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ){
-      paths = new ArrayList<ArrayList<Node>>();
-      int numberOfPaths = 0;
-      if (pickups.Spots.size() < destinations.Spots.size()){
-          numberOfPaths = pickups.Spots.size();
+  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ) {
+    paths = new ArrayList<ArrayList<Node>>();
+    int numberOfPaths = 0;
+    if (pickups.Spots.size() < destinations.Spots.size()) {
+      numberOfPaths = pickups.Spots.size();
+    } else {
+      numberOfPaths = destinations.Spots.size();
+    }
+    println(numberOfPaths);
+    for (int i = 0; i< numberOfPaths; i++) {
+      ArrayList<Node> p = new ArrayList <Node>();
+      p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i));
+      paths.add(p);
+      println(p);
+      if (!presenceOfPath && path.pathPresent) {
+        presenceOfPath = true;
       }
-      else{numberOfPaths = destinations.Spots.size();}
-      println(numberOfPaths);
-      for (int i = 0; i< numberOfPaths; i++){
-          paths.add(path.findPath(pickups.Spots.get(i), destinations.Spots.get(i)));
-          if (!presenceOfPath && path.pathPresent){presenceOfPath = true;}
-      }
-   
-      
-      
+    }
   }
-  
 }
 
 void draw() {
@@ -109,22 +117,22 @@ void draw() {
   if (drawRoads) {
     roads.drawRoads();
   }
-  
-  if (drawPath && presenceOfPath){
-    for (ArrayList<Node> eachPath: paths){
-    path.drawPath(eachPath);
+
+  if (drawPath && presenceOfPath) {
+    for (ArrayList<Node> eachPath : paths) {
+      path.drawPath(eachPath);
     }
   }
-  
-  
-  
-  
-  
+
+
+
+
+
 
   // run PEVs
   PEVs.run();
   Spots.run();
-  
+
   //  image(pg, 0, 0);
 
   // show frameRate

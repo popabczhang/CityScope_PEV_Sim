@@ -20,26 +20,26 @@ class Spot {
     //road = roads.roads.get(roadID);
     road = _road;
     t = _t;
-    status = int(random(0,2));
+    status = int(random(0, 2));
     locationPt = road.getPt(t);
     speedT = 0; //speedT unit: t per frame
   }
-void run() {
+  void run() {
 
     //move();
 
     getDirection();
-    
+
     render();
   }
 
   void move() {
     // update the speed according to frameRate
     speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-    
+
     // calc the next step
     t = t + speedT;
-    
+
     // if at end of road
     if (t + speedT > 1.0) {
       // simple test on one road
@@ -62,9 +62,9 @@ void run() {
             //println("pass if 02");
             nextRoads.add(tmpRoad);
           }
-          }
         }
-        //i ++;
+      }
+      //i ++;
       //println("find: "+nextRoads.size());
 
       // pick one next road
@@ -107,16 +107,17 @@ void run() {
     //println("subPVector: " + subPVector);
     //println("rotation: " + rotation);
   }
-  
+
   void render() {
-  
+
     pushMatrix();
     translate(locationPt.x, locationPt.y);
-    if (status==0){
-    fill(255,240,0);
+    if (status==0) {
+      fill(255, 240, 0);
+    } else {
+      fill(255, 0, 0);
     }
-    else{fill(255,0,0);}
-    ellipse(0,0, 10,10);
+    ellipse(0, 0, 10, 10);
     //// draw direction line
     //stroke(0, 255, 0); 
     //strokeWeight(0.5); 
@@ -126,6 +127,5 @@ void run() {
     scale(0.3);
     //translate(-img_PEV.width/2, -img_PEV.height/2);
     popMatrix();
-    
   }
 }

@@ -24,9 +24,7 @@ class Spots {
       //PEV tmpPEV = new PEV(currentPEVID, tmpRoadID, t);
       Spot tmpSpot = new Spot(tmpRoad, t);
       Spots.add(tmpSpot);
-
     }
-
   }
 
   void run() {

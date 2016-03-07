@@ -41,9 +41,7 @@ class PEVs {
       //PEV tmpPEV = new PEV(currentPEVID, tmpRoadID, t);
       PEV tmpPEV = new PEV(tmpRoad, t);
       PEVs.add(tmpPEV);
-
     }
-
   }
 
   void run() {

@@ -48,7 +48,7 @@ class Road {
       roadPts[i] = new PVector(x, y, z);
     }
   }
-// This will be an important method for analyzing which PEVS are closest to a certain location
+  // This will be an important method for analyzing which PEVS are closest to a certain location
   PVector getPt(float _t) {
     float t = _t;
     int l = roadPts.length;
@@ -72,7 +72,7 @@ class Road {
       return roadPts[n+1];
     }
   }
-  
+
   PVector getTangentVector(float _t) {
     float t = _t;
     int l = roadPts.length;

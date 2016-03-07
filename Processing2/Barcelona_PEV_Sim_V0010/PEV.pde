@@ -41,7 +41,7 @@ class PEV {
     move();
 
     getDirection();
-    
+
     changeState();
 
     render();
@@ -50,10 +50,10 @@ class PEV {
   void move() {
     // update the speed according to frameRate
     speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-    
+
     // calc the next step
     t = t + speedT;
-    
+
     // if at end of road
     if (t + speedT > 1.0) {
       // simple test on one road
@@ -121,8 +121,8 @@ class PEV {
     //println("subPVector: " + subPVector);
     //println("rotation: " + rotation);
   }
-  
-  void changeState(){
+
+  void changeState() {
     float rnd = random(0.0, 1.0);
     if (rnd <= stateChangeOdd) {
       int n = int(random(0, imgs_PEV.size()-1)+0.5);
@@ -131,7 +131,7 @@ class PEV {
   }
 
   void render() {
-  
+
     pushMatrix();
     translate(locationPt.x, locationPt.y);
     rotate(rotation);
@@ -146,6 +146,5 @@ class PEV {
     translate(-img_PEV.width/2, -img_PEV.height/2);
     image(img_PEV, 0, 0);
     popMatrix();
-    
   }
 }
