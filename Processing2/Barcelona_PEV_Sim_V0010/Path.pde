@@ -9,6 +9,7 @@ class Path{
    String roadPtFile;
    ArrayList <Node> allNodes;
    ArrayList <Node> pathOfNodes;
+   boolean pathPresent = false;
 
 Path(){
   allNodes = new ArrayList <Node>();
@@ -26,10 +27,11 @@ ArrayList <Node> successors(Node parent){
   return successorNodes;
 }
 
-void findPath(Spot spot, Spot goal){
+ArrayList<Node> findPath(Spot spot, Spot goal){
         ArrayList <Node> agenda = new ArrayList<Node>();
         ArrayList <Node> visited = new ArrayList <Node>();
-        Node beginning = new Node(null, spot.locationPt , spot.road);
+        ArrayList <Node> specificSuccessorNodes = new ArrayList <Node>();
+        Node beginning = new Node(spot.locationPt, spot.locationPt , spot.road);
         PVector destinationPt = goal.locationPt;
         Node parent = null;
         agenda.add(beginning);
@@ -37,28 +39,32 @@ void findPath(Spot spot, Spot goal){
         while (agenda.size() > 0){
                parent = agenda.get(agenda.size()-1);
                agenda.remove(agenda.size()-1);
-               ArrayList <Node> successorNodes = successors(parent);
-               for (Node next: successorNodes ){
+               specificSuccessorNodes = successors(parent);
+               //println(specificSuccessorNodes);
+               //println(allNodes);
+               for (Node next: specificSuccessorNodes ){
                    if (next.start == destinationPt){
-                       pathOfNodes = agenda;
+                       println("Path found");
+                       pathPresent = true;
+                       return agenda;
                    }
 
-                   if (visited.contains(next) == false){
+                   else if (visited.contains(next) == false){
                        agenda.add(next);
                        visited.add(next);
                    }
                }
         
         }
-        for(Node node : pathOfNodes){
-        println(node.start);
-        }
+        println("No path found");
+        return null;
+        
 }
 
 
 // Creating ArrayList of all Nodes
-void addNodesToAllNodes(){
-  for (Road road : Roads){
+void addNodesToAllNodes(Roads roads1){
+  for (Road road : roads1.roads){
       for (float t = 0.0; t<=1.0-(1/road.roadPts.length); t+=(1/road.roadPts.length)){
         Node node1 = new Node(road.getPt(t), road.getNextPt(t), road);
         allNodes.add(node1);
@@ -75,8 +81,10 @@ void addNodeToPath(Node node){
   }
   
 void drawPath(ArrayList<Node> path) {
+    if (path != null){
     for (Node node : path) {
       node.drawNode();
+    }
     }
 }
 }

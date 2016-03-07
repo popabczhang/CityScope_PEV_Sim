@@ -10,7 +10,7 @@ PImage img_BG;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
 int totalPEVNum = 10;
-int totalSpotNum = 2;
+int totalSpotNum = 4;
 int targetPEVNum;
 int totalRoadNum;
 float scaleMeterPerPixel = 2.15952; //meter per pixel in processing; meter per mm in rhino
@@ -58,6 +58,7 @@ void setup() {
   pickups = new Spots();
   destinations = new Spots();
   path = new Path();
+  path.addNodesToAllNodes(roads);
   
   for (Spot spot: Spots.Spots){
      if (spot.status == 0){
@@ -68,20 +69,20 @@ void setup() {
        destinations.addSpot(spot);   
      }
   }
-  
+  println(pickups.Spots.size());
+  println(destinations.Spots.size());
   // Creating Paths
-  if (pickups.Spots.size() > 1 && destinations.Spots.size() > 1 ){
+  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ){
       paths = new ArrayList<ArrayList<Node>>();
       int numberOfPaths = 0;
       if (pickups.Spots.size() < destinations.Spots.size()){
           numberOfPaths = pickups.Spots.size();
       }
       else{numberOfPaths = destinations.Spots.size();}
-      
-      for (int i = 0; i<= numberOfPaths; i++){
-          path.findPath(pickups.Spots.get(i), destinations.Spots.get(i));
-          paths.add(path.pathOfNodes);
-          if (!presenceOfPath){presenceOfPath = true;}
+      println(numberOfPaths);
+      for (int i = 0; i< numberOfPaths; i++){
+          paths.add(path.findPath(pickups.Spots.get(i), destinations.Spots.get(i)));
+          if (!presenceOfPath && path.pathPresent){presenceOfPath = true;}
       }
    
       

@@ -64,7 +64,6 @@ class Roads {
       }
     }
     totalRoadNum = roadCountOneWay;
-    println("total road number (oneway) = " + totalRoadNum);
   }
 
   void addRoad(Road road) {
