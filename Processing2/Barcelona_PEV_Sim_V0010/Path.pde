@@ -7,12 +7,10 @@
 class Path {
   ArrayList <Road> Roads;
   String roadPtFile;
-  ArrayList <Node> allNodes;
   ArrayList <Node> pathOfNodes;
   boolean pathPresent = false;
 
   Path() {
-    allNodes = new ArrayList <Node>();
     pathOfNodes = new ArrayList <Node>();
   }
 
@@ -41,7 +39,7 @@ class Path {
       agenda.remove(agenda.size()-1);
       specificSuccessorNodes = successors(parent, nodes);
       //println(specificSuccessorNodes);
-      //println(allNodes);
+      //println(nodes.allNodes);
       for (Node next : specificSuccessorNodes ) {
         if (next.start == destinationPt) {
           println("Path found");
@@ -55,20 +53,6 @@ class Path {
     }
     println("No path found");
     return null;
-  }
-
-
-  // Creating ArrayList of all Nodes
-  void addNodesToAllNodes(Roads roads1) {
-    for (Road road : roads1.roads) {
-      for (float t = 0.0; t<=1.0-(1.0/road.roadPts.length); t+=(1.0/road.roadPts.length)) {
-        Node node1 = new Node(road.getPt(t), road.getNextPt(t), road);
-        allNodes.add(node1);
-      }
-    }
-  }
-  void addNodeToAll(Node node) {
-    allNodes.add(node);
   }
 
   void addNodeToPath(Node node) {
