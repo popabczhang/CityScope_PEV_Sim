@@ -26,6 +26,7 @@ ArrayList <ArrayList<Node>> paths;
 Path path;
 Spots pickups;
 Spots destinations;
+Nodes nodes;
 boolean presenceOfPath = false;
 
 void setup() {
@@ -64,7 +65,8 @@ void setup() {
   pickups = new Spots();
   destinations = new Spots();
   path = new Path();
-  path.addNodesToAllNodes(roads);
+  nodes = new Nodes();
+  nodes.addNodesToAllNodes(roads);
 
   for (Spot spot : Spots.Spots) {
     if (spot.status == 0) {
