@@ -67,7 +67,8 @@ void setup() {
   path = new Path();
   nodes = new Nodes();
   nodes.addNodesToAllNodes(roads);
-
+  
+  // Checking how many pairs of pickups and destinations exist
   for (Spot spot : Spots.Spots) {
     if (spot.status == 0) {
       pickups.addSpot(spot);
@@ -89,9 +90,11 @@ void setup() {
       numberOfPaths = destinations.Spots.size();
     }
     println(numberOfPaths);
+
+    // Finding path for each pair of spot and destination
     for (int i = 0; i< numberOfPaths; i++) {
       ArrayList<Node> p = new ArrayList <Node>();
-      p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i));
+      p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i), nodes);
       paths.add(p);
       println(p);
       if (!presenceOfPath && path.pathPresent) {

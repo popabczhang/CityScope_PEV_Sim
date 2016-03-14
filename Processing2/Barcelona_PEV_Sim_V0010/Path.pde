@@ -17,9 +17,9 @@ class Path {
   }
 
   // Successors function
-  ArrayList <Node> successors(Node parent) {
+  ArrayList <Node> successors(Node parent, Nodes nodes) {
     ArrayList<Node> successorNodes = new ArrayList <Node>();
-    for (Node child : allNodes) {
+    for (Node child : nodes.allNodes) {
       if (parent.end == child.start) {
         successorNodes.add(child);
       }
@@ -27,7 +27,7 @@ class Path {
     return successorNodes;
   }
 
-  ArrayList<Node> findPath(Spot spot, Spot goal) {
+  ArrayList<Node> findPath(Spot spot, Spot goal, Nodes nodes) {
     ArrayList <Node> agenda = new ArrayList<Node>();
     ArrayList <Node> visited = new ArrayList <Node>();
     ArrayList <Node> specificSuccessorNodes = new ArrayList <Node>();
@@ -39,7 +39,7 @@ class Path {
     while (agenda.size() > 0) {
       parent = agenda.get(agenda.size()-1);
       agenda.remove(agenda.size()-1);
-      specificSuccessorNodes = successors(parent);
+      specificSuccessorNodes = successors(parent, nodes);
       //println(specificSuccessorNodes);
       //println(allNodes);
       for (Node next : specificSuccessorNodes ) {
