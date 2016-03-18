@@ -7,19 +7,19 @@
 class Node {
   ArrayList <Road> Roads;
   String roadPtFile;
-  PVector start;
-  PVector end;
+  PVector point;
+  int id;
   Road roadOfNode;
 
-  Node(PVector start1, PVector end1, Road road1) {
-    start = start1;
-    end = end1;
+  Node(PVector point1, int id1, Road road1) {
+    point = point1;
     roadOfNode = road1;
+    id = id1;
   }
 
-  void drawNode() {
-    stroke(255, 0, 0); //cyan
-    strokeWeight(1.0); 
-    line(start.x, start.y, end.x, end.y);
-  }
+  //void drawNode() {
+    //stroke(255, 0, 0); //cyan
+    //strokeWeight(1.0); 
+    //line(start.x, start.y, end.x, end.y);
+  //}
 }

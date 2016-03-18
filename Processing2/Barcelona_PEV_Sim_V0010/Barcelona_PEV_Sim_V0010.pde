@@ -95,8 +95,9 @@ void setup() {
     for (int i = 0; i< numberOfPaths; i++) {
       ArrayList<Node> p = new ArrayList <Node>();
       p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i), nodes);
+      println(p.size());
       paths.add(p);
-      println(p);
+      //println(p);
       if (!presenceOfPath && path.pathPresent) {
         presenceOfPath = true;
       }

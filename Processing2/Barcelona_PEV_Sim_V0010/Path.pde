@@ -9,6 +9,7 @@ class Path {
   String roadPtFile;
   ArrayList <Node> pathOfNodes;
   boolean pathPresent = false;
+  float roadConnectionTolerance = 10.0; //pxl; smaller than 1.0 will cause error
 
   Path() {
     pathOfNodes = new ArrayList <Node>();
@@ -18,7 +19,7 @@ class Path {
   ArrayList <Node> successors(Node parent, Nodes nodes) {
     ArrayList<Node> successorNodes = new ArrayList <Node>();
     for (Node child : nodes.allNodes) {
-      if (parent.end == child.start) {
+      if (PVector.dist(parent.point,child.point) <= roadConnectionTolerance) {
         successorNodes.add(child);
       }
     } 
@@ -26,22 +27,24 @@ class Path {
   }
 
   ArrayList<Node> findPath(Spot spot, Spot goal, Nodes nodes) {
+    //int successorCount = 0;
+    //int whileCount = 0;
     ArrayList <Node> agenda = new ArrayList<Node>();
     ArrayList <Node> visited = new ArrayList <Node>();
     ArrayList <Node> specificSuccessorNodes = new ArrayList <Node>();
-    Node beginning = new Node(spot.locationPt, spot.locationPt, spot.road);
+    Node beginning = new Node(spot.locationPt, -1, spot.road);
     PVector destinationPt = goal.locationPt;
     Node parent = null;
     agenda.add(beginning);
     visited.add(beginning);
     while (agenda.size() > 0) {
-      parent = agenda.get(agenda.size()-1);
-      agenda.remove(agenda.size()-1);
+      parent = agenda.get(0);
+      agenda.remove(0);
       specificSuccessorNodes = successors(parent, nodes);
       //println(specificSuccessorNodes);
       //println(nodes.allNodes);
       for (Node next : specificSuccessorNodes ) {
-        if (next.start == destinationPt) {
+        if (next.point == destinationPt) {
           println("Path found");
           pathPresent = true;
           return agenda;
@@ -52,6 +55,7 @@ class Path {
       }
     }
     println("No path found");
+    println(destinationPt);
     return null;
   }
 
@@ -61,8 +65,9 @@ class Path {
 
   void drawPath(ArrayList<Node> path) {
     if (path != null) {
-      for (Node node : path) {
-        node.drawNode();
+      int len = path.size();
+      for (int i = 0; i<=len-1; i++) {
+        //node.drawNode();
       }
     }
   }
