@@ -8,11 +8,14 @@ class Path {
   ArrayList <Road> Roads;
   String roadPtFile;
   ArrayList <Node> pathOfNodes;
+  int[] parentArray;
   boolean pathPresent = false;
   float roadConnectionTolerance = 10.0; //pxl; smaller than 1.0 will cause error
+  int infinity = 999999999;
 
-  Path() {
+  Path(Nodes nodes) {
     pathOfNodes = new ArrayList <Node>();
+    parentArray = new int[nodes.allNodes.size()];
   }
 
   // Successors function
@@ -29,6 +32,9 @@ class Path {
   ArrayList<Node> findPath(Spot spot, Spot goal, Nodes nodes) {
     //int successorCount = 0;
     //int whileCount = 0;
+    for (Node node: nodes.allNodes){
+       parentArray[node.id] = infinity;
+    }
     ArrayList <Node> agenda = new ArrayList<Node>();
     ArrayList <Node> visited = new ArrayList <Node>();
     ArrayList <Node> specificSuccessorNodes = new ArrayList <Node>();
@@ -36,7 +42,6 @@ class Path {
     PVector destinationPt = goal.locationPt;
     Node parent = null;
     agenda.add(beginning);
-    visited.add(beginning);
     while (agenda.size() > 0) {
       parent = agenda.get(0);
       agenda.remove(0);
@@ -48,9 +53,9 @@ class Path {
           println("Path found");
           pathPresent = true;
           return agenda;
-        } else if (visited.contains(next) == false) {
+        } else if (parentArray[next.id] == infinity) {
           agenda.add(next);
-          visited.add(next);
+          parentArray[next.id] = parent.id;
         }
       }
     }

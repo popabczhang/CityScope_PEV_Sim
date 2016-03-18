@@ -64,9 +64,9 @@ void setup() {
   Spots.initiate(totalSpotNum);
   pickups = new Spots();
   destinations = new Spots();
-  path = new Path();
   nodes = new Nodes();
   nodes.addNodesToAllNodes(roads);
+  path = new Path(nodes);
   
   // Checking how many pairs of pickups and destinations exist
   for (Spot spot : Spots.Spots) {
