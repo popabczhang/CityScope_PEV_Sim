@@ -22,13 +22,13 @@ PEVs PEVs;
 Spots Spots;
 boolean drawRoads = false;
 boolean drawPath = false;
+boolean drawTest = false;
 ArrayList <ArrayList<PVector>> paths;
 Path path;
 Spots pickups;
 Spots destinations;
 Nodes nodes;
 boolean presenceOfPath = false;
-boolean drawTest = false;
 
 void setup() {
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
@@ -135,11 +135,11 @@ void draw() {
     path.drawAllPaths();
   }
 
-  //if (drawPath && presenceOfPath) {
-  //  for (ArrayList<Node> eachPath : paths) {
-  //  path.drawPath(eachPath);
-  //}
-  //}
+  if (drawPath && presenceOfPath) {
+    for (ArrayList<PVector> eachPath : paths) {
+      path.drawPath(eachPath);
+    }
+  }
 
 
 
