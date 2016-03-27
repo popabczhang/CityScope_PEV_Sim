@@ -10,7 +10,7 @@ PImage img_BG;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
 int totalPEVNum = 10;
-int totalSpotNum = 4;
+int totalSpotNum = 2;
 int targetPEVNum;
 int totalRoadNum;
 float scaleMeterPerPixel = 2.15952; //meter per pixel in processing; meter per mm in rhino
@@ -22,15 +22,15 @@ PEVs PEVs;
 Spots Spots;
 boolean drawRoads = false;
 boolean drawPath = false;
-ArrayList <ArrayList<Node>> paths;
+ArrayList <ArrayList<PVector>> paths;
 Path path;
 Spots pickups;
 Spots destinations;
 Nodes nodes;
 boolean presenceOfPath = false;
+boolean drawTest = false;
 
 void setup() {
-
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
   scale(screenScale);
@@ -67,8 +67,9 @@ void setup() {
   nodes = new Nodes();
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-  
+
   // Checking how many pairs of pickups and destinations exist
+
   for (Spot spot : Spots.Spots) {
     if (spot.status == 0) {
       pickups.addSpot(spot);
@@ -80,9 +81,12 @@ void setup() {
   }
   println(pickups.Spots.size());
   println(destinations.Spots.size());
+
+
   // Creating Paths
+
   if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ) {
-    paths = new ArrayList<ArrayList<Node>>();
+    paths = new ArrayList<ArrayList<PVector>>();
     int numberOfPaths = 0;
     if (pickups.Spots.size() < destinations.Spots.size()) {
       numberOfPaths = pickups.Spots.size();
@@ -91,12 +95,14 @@ void setup() {
     }
     println(numberOfPaths);
 
+
     // Finding path for each pair of spot and destination
+
     for (int i = 0; i< numberOfPaths; i++) {
-      ArrayList<Node> p = new ArrayList <Node>();
+      int [] p = new int[nodes.allNodes.size()];
       p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i), nodes);
-      println(p.size());
-      paths.add(p);
+      ArrayList <PVector> finalPath = path.pathFromParentArray(p, pickups.Spots.get(i), destinations.Spots.get(i));
+      paths.add(finalPath);
       //println(p);
       if (!presenceOfPath && path.pathPresent) {
         presenceOfPath = true;
@@ -124,11 +130,16 @@ void draw() {
     roads.drawRoads();
   }
 
-  if (drawPath && presenceOfPath) {
-    for (ArrayList<Node> eachPath : paths) {
-      path.drawPath(eachPath);
-    }
+  if (drawTest) {
+    //for (int i = 0; i<= nodes.allNodes.size()-2; i++){
+    path.drawAllPaths();
   }
+
+  //if (drawPath && presenceOfPath) {
+  //  for (ArrayList<Node> eachPath : paths) {
+  //  path.drawPath(eachPath);
+  //}
+  //}
 
 
 

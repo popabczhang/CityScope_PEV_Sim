@@ -6,8 +6,10 @@ void keyPressed() {
   case 'p':
     drawPath = !drawPath;
     break;
+  case 't':
+    drawTest= !drawTest;
+    break;
   }
-
 
   //  if (key == CODED) { 
   //    if (keyCode == LEFT) {
