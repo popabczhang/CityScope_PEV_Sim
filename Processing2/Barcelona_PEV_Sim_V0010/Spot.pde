@@ -28,7 +28,7 @@ class Spot {
 
     //move();
 
-    getDirection();
+    getRotation();
 
     render();
   }
@@ -84,7 +84,7 @@ class Spot {
     }
   }
 
-  void getDirection() {
+  void getRotation() {
     // get rotation
     locationPt = road.getPt(t);
     locationTangent = road.getTangentVector(t);

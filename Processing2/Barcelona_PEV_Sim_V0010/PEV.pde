@@ -14,7 +14,7 @@ float stateChangeOdd = 0.0075;
 class PEV {
 
   //int id; //PEV agent id
-  int status; //0 - empty; 1 - psg; 2 - pkg; 3 - psg & pkg
+  int status; 
   //int roadID; //the road the PEV is currently on
   Road road; //current road object
   float t; //t location of the current road;
@@ -23,6 +23,10 @@ class PEV {
   float rotation; //rotation in radius on the canvas
   float speedT; //current speed; units: t per frame
   PImage img_PEV;
+  ArrayList <PVector> inRoutePath = new ArrayList <PVector>();
+  ArrayList <PVector> deliveringPath = new ArrayList <PVector>();
+  int inRoutePathCount = 0;
+  int deliveringPathCount = 0;
 
   PEV(Road _road, float _t) {
     //id = _id;
@@ -34,13 +38,18 @@ class PEV {
     locationPt = road.getPt(t);
     speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
     img_PEV = imgs_PEV.get(int(random(0, imgs_PEV.size()-1)+0.5));
+    inRoutePath = null;
   }
 
   void run() {
 
     move();
 
-    getDirection();
+    if (inRoutePath == null && deliveringPath == null) {
+      getRotation();
+    } else {
+      getRotation2();
+    }
 
     changeState();
 
@@ -48,57 +57,75 @@ class PEV {
   }
 
   void move() {
-    // update the speed according to frameRate
-    speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
+    if (inRoutePath == null && deliveringPath == null) {
+      // update the speed according to frameRate
+      speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
 
-    // calc the next step
-    t = t + speedT;
+      // calc the next step
+      t = t + speedT;
 
-    // if at end of road
-    if (t + speedT > 1.0) {
-      // simple test on one road
-      //speedT = -speedT;
+      // if at end of road
+      if (t + speedT > 1.0) {
+        // simple test on one road
+        //speedT = -speedT;
 
-      // looking for all next road connected
-      ArrayList<Road> nextRoads = new ArrayList<Road>();
-      PVector roadEndPt = road.roadPts[road.ptNum-1];
-      PVector roadStartPt = road.roadPts[0];
-      //int i = 0;
-      for (Road tmpRoad : roads.roads) {
-        PVector tmpRoadStartPt = tmpRoad.roadPts[0];
-        PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
-        //println("tmpRoad ["+i+"]: ");
-        //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
-        //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
-        if (PVector.dist(roadEndPt, tmpRoadStartPt) <= roadConnectionTolerance) {
-          //println("pass if 01");
-          if (PVector.dist(roadStartPt, tmpRoadEndPt) > roadConnectionTolerance) {
-            //println("pass if 02");
-            nextRoads.add(tmpRoad);
+        // looking for all next road connected
+        ArrayList<Road> nextRoads = new ArrayList<Road>();
+        PVector roadEndPt = road.roadPts[road.ptNum-1];
+        PVector roadStartPt = road.roadPts[0];
+        //int i = 0;
+        for (Road tmpRoad : roads.roads) {
+          PVector tmpRoadStartPt = tmpRoad.roadPts[0];
+          PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
+          //println("tmpRoad ["+i+"]: ");
+          //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
+          //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
+          if (PVector.dist(roadEndPt, tmpRoadStartPt) <= roadConnectionTolerance) {
+            //println("pass if 01");
+            if (PVector.dist(roadStartPt, tmpRoadEndPt) > roadConnectionTolerance) {
+              //println("pass if 02");
+              nextRoads.add(tmpRoad);
+            }
           }
+          //i ++;
         }
-        //i ++;
-      }
-      //println("find: "+nextRoads.size());
+        //println("find: "+nextRoads.size());
 
-      // pick one next road
-      if (nextRoads.size() <= 0) {
-        println("ERROR: CAN NOT FIND NEXT ROAD!" + 
-          "THERE MUST BE DEADEND ROAD! CHECK ROAD RHINO FILE OR ROAD PT DATA TXT");
-      }
-      int n = int(random(0, nextRoads.size()-1)+0.5); //int(0.7) = 0, so need +0.5
-      //println("n = "+n+"; nextRoads.size()-1 = "+str(nextRoads.size()-1)
-      //  +"; random(0, nextRoads.size()-1) = "+str(random(0, nextRoads.size()-1)));
-      //println("t = "+t);
-      Road nextRoad = nextRoads.get(n);
+        // pick one next road
+        if (nextRoads.size() <= 0) {
+          println("ERROR: CAN NOT FIND NEXT ROAD!" + 
+            "THERE MUST BE DEADEND ROAD! CHECK ROAD RHINO FILE OR ROAD PT DATA TXT");
+        }
+        int n = int(random(0, nextRoads.size()-1)+0.5); //int(0.7) = 0, so need +0.5
+        //println("n = "+n+"; nextRoads.size()-1 = "+str(nextRoads.size()-1)
+        //  +"; random(0, nextRoads.size()-1) = "+str(random(0, nextRoads.size()-1)));
+        //println("t = "+t);
+        Road nextRoad = nextRoads.get(n);
 
-      // switch current road to next road
-      road = nextRoad; 
-      t = 0.0;
+        // switch current road to next road
+        road = nextRoad; 
+        t = 0.0;
+      }
+    } else if (inRoutePath != null) {
+      if (inRoutePathCount<inRoutePath.size()) {
+        locationPt = inRoutePath.get(inRoutePathCount);
+        inRoutePathCount += 1;
+      } else {
+        inRoutePathCount = 0;
+        inRoutePath = null;
+      }
+    } else if (deliveringPath != null) {
+      if (deliveringPathCount<deliveringPath.size()) {
+        locationPt = deliveringPath.get(deliveringPathCount);
+        deliveringPathCount += 1;
+      } else {
+        deliveringPathCount = 0;
+        deliveringPath = null;
+      }
     }
   }
 
-  void getDirection() {
+  void getRotation() {
     // get rotation
     locationPt = road.getPt(t);
     locationTangent = road.getTangentVector(t);
@@ -121,7 +148,31 @@ class PEV {
     //println("subPVector: " + subPVector);
     //println("rotation: " + rotation);
   }
+  
+  
+  //When PEV is not wandering
+  void getRotation2() {
+    // get rotation
+    locationTangent = road.getTangentVector(t);
+    rotation = PVector.angleBetween(new PVector(1.0, 0.0, 0.0), locationTangent);
+    if (locationTangent.y < 0) {
+      rotation = -rotation;
+    }
 
+    //// drawn tangent
+    //stroke(255, 255, 255);
+    //strokeWeight(0.5F);
+    //PVector v1 = locationTangent.setMag(50);
+    //PVector v2 = PVector.sub(locationPt,v1);
+    //PVector v3 = locationTangent.setMag(100);
+    //PVector v4 = PVector.add(locationPt,v3);
+    //line(v2.x, v2.y, v4.x, v4.y);
+
+    //println("locationPt: " + locationPt);
+    //println("locationNextPt: " + locationNextPt);
+    //println("subPVector: " + subPVector);
+    //println("rotation: " + rotation);
+  }
   void changeState() {
     float rnd = random(0.0, 1.0);
     if (rnd <= stateChangeOdd) {

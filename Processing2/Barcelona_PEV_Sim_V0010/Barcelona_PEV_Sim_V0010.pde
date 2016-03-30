@@ -10,7 +10,7 @@ PImage img_BG;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
 int totalPEVNum = 10;
-int totalSpotNum = 2;
+int totalSpotNum = 4;
 int targetPEVNum;
 int totalRoadNum;
 float scaleMeterPerPixel = 2.15952; //meter per pixel in processing; meter per mm in rhino
@@ -29,6 +29,7 @@ Spots pickups;
 Spots destinations;
 Nodes nodes;
 boolean presenceOfPath = false;
+float time = 0.0;
 
 void setup() {
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
@@ -58,7 +59,11 @@ void setup() {
   // add PEVs
   PEVs = new PEVs();
   PEVs.initiate(totalPEVNum);
-
+  
+  //add od data
+  String d = "oddata.tsv";
+  Schedule schedule = new Schedule(d);
+  
   //add Pickup Spots
   Spots = new Spots();
   Spots.initiate(totalSpotNum);
@@ -80,6 +85,7 @@ void setup() {
     }
   }
   println(pickups.Spots.size());
+  //println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
   println(destinations.Spots.size());
 
 
@@ -109,10 +115,12 @@ void setup() {
       }
     }
   }
+  
 }
 
 void draw() {
-
+  
+  time += 1;
   scale(screenScale);
   background(0);
 

@@ -113,7 +113,7 @@ class Path {
         current = nodes.allNodes.get(parentid);
         finalPath.add(current.point);
       }
-      println(finalPath);
+      //println(finalPath);
       return finalPath;
     }
   }
