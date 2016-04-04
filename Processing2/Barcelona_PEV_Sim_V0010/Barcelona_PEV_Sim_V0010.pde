@@ -29,8 +29,9 @@ Spots pickups;
 Spots destinations;
 Nodes nodes;
 boolean presenceOfPath = false;
-float time = 0.0;
-
+int time = 0;
+int currentJob = 0;
+int currentPEV;
 void setup() {
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
@@ -59,14 +60,14 @@ void setup() {
   // add PEVs
   PEVs = new PEVs();
   PEVs.initiate(totalPEVNum);
-  
+
   //add od data
   String d = "oddata.tsv";
   Schedule schedule = new Schedule(d);
-  
   //add Pickup Spots
   Spots = new Spots();
   Spots.initiate(totalSpotNum);
+
   pickups = new Spots();
   destinations = new Spots();
   nodes = new Nodes();
@@ -85,7 +86,7 @@ void setup() {
     }
   }
   println(pickups.Spots.size());
-  //println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
+  println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
   println(destinations.Spots.size());
 
 
@@ -100,27 +101,29 @@ void setup() {
       numberOfPaths = destinations.Spots.size();
     }
     println(numberOfPaths);
-
-
-    // Finding path for each pair of spot and destination
-
-    for (int i = 0; i< numberOfPaths; i++) {
-      int [] p = new int[nodes.allNodes.size()];
-      p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i), nodes);
-      ArrayList <PVector> finalPath = path.pathFromParentArray(p, pickups.Spots.get(i), destinations.Spots.get(i));
-      paths.add(finalPath);
-      //println(p);
-      if (!presenceOfPath && path.pathPresent) {
-        presenceOfPath = true;
-      }
-    }
   }
-  
+   
+   // Moving to starting location path
+   
+   currentPEV = PEVs.findNearestPEV(pickups.Spots.get(0).locationPt);
+   PEVs.PEVs.get(currentPEV).makeFull();
+   int [] p = path.findPath(PEVs.PEVs.get(currentPEV).locationPt,pickups.Spots.get(0).locationPt, nodes);
+   PEVs.PEVs.get(currentPEV).inRoutePath = path.pathFromParentArray(p, PEVs.PEVs.get(currentPEV).locationPt,pickups.Spots.get(0).locationPt);
+   
+   // Moving from start to finish path
+   
+  int [] p2 = path.findPath(pickups.Spots.get(0).locationPt,destinations.Spots.get(0).locationPt, nodes);
+  PEVs.PEVs.get(currentPEV).deliveringPath = path.pathFromParentArray(p2, pickups.Spots.get(0).locationPt,destinations.Spots.get(0).locationPt);
 }
 
 void draw() {
   
   time += 1;
+
+  // Getting a PEV to "pick up package"
+
+
+
   scale(screenScale);
   background(0);
 
@@ -142,7 +145,9 @@ void draw() {
     //for (int i = 0; i<= nodes.allNodes.size()-2; i++){
     path.drawAllPaths();
   }
-
+  
+  
+  
   if (drawPath && presenceOfPath) {
     for (ArrayList<PVector> eachPath : paths) {
       path.drawPath(eachPath);
@@ -185,4 +190,6 @@ void draw() {
   fill(0);
   text(targetPEVNum, 263, 712);
   text(int(maxSpeedKPH/10), 263, 736);
+  
+  
 }

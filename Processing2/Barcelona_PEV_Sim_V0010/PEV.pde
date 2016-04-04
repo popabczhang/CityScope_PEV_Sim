@@ -15,6 +15,7 @@ class PEV {
 
   //int id; //PEV agent id
   int status; 
+  String action = "wandering";
   //int roadID; //the road the PEV is currently on
   Road road; //current road object
   float t; //t location of the current road;
@@ -25,6 +26,8 @@ class PEV {
   PImage img_PEV;
   ArrayList <PVector> inRoutePath = new ArrayList <PVector>();
   ArrayList <PVector> deliveringPath = new ArrayList <PVector>();
+  float speedIRP = 0.0;
+  float speedDP = 0.0;
   int inRoutePathCount = 0;
   int deliveringPathCount = 0;
 
@@ -37,21 +40,25 @@ class PEV {
     status = 0;
     locationPt = road.getPt(t);
     speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-    img_PEV = imgs_PEV.get(int(random(0, imgs_PEV.size()-1)+0.5));
+    img_PEV = imgs_PEV.get(0);
     inRoutePath = null;
   }
 
   void run() {
-
+    //if (inRoutePath == null && deliveringPath == null) {
     move();
-
+    //} else if (inRoutePath != null) {
+    //  move2();
+    //} else {
+    //  move3();
+    //}
     if (inRoutePath == null && deliveringPath == null) {
-      getRotation();
+    getRotation();
     } else {
       getRotation2();
     }
 
-    changeState();
+    //changeState();
 
     render();
   }
@@ -90,7 +97,6 @@ class PEV {
           //i ++;
         }
         //println("find: "+nextRoads.size());
-
         // pick one next road
         if (nextRoads.size() <= 0) {
           println("ERROR: CAN NOT FIND NEXT ROAD!" + 
@@ -106,10 +112,13 @@ class PEV {
         road = nextRoad; 
         t = 0.0;
       }
-    } else if (inRoutePath != null) {
+    }
+    
+    else if (inRoutePath != null) {
       if (inRoutePathCount<inRoutePath.size()) {
         locationPt = inRoutePath.get(inRoutePathCount);
-        inRoutePathCount += 1;
+        speedIRP += 1.0/60;
+        inRoutePathCount = 1 + int(speedIRP);
       } else {
         inRoutePathCount = 0;
         inRoutePath = null;
@@ -117,11 +126,25 @@ class PEV {
     } else if (deliveringPath != null) {
       if (deliveringPathCount<deliveringPath.size()) {
         locationPt = deliveringPath.get(deliveringPathCount);
-        deliveringPathCount += 1;
+        //speedDP = 1.0/60;
+        deliveringPathCount = 1 + int(speedDP);
       } else {
         deliveringPathCount = 0;
         deliveringPath = null;
       }
+    }
+  
+  }
+
+  void moveInRoute(ArrayList<PVector> path){
+    if (inRoutePathCount > path.size()){
+      inRoutePathCount = 0;
+      path = null;
+      action = "delivering";
+    }
+  else{
+      locationPt = path.get(inRoutePathCount);
+      inRoutePathCount += 1;
     }
   }
 
@@ -148,8 +171,8 @@ class PEV {
     //println("subPVector: " + subPVector);
     //println("rotation: " + rotation);
   }
-  
-  
+
+
   //When PEV is not wandering
   void getRotation2() {
     // get rotation
@@ -197,5 +220,9 @@ class PEV {
     translate(-img_PEV.width/2, -img_PEV.height/2);
     image(img_PEV, 0, 0);
     popMatrix();
+  }
+
+  void makeFull() {
+    img_PEV = imgs_PEV.get(1);
   }
 }

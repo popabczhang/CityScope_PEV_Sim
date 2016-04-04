@@ -17,9 +17,11 @@ class Node {
     id = id1;
   }
 
-  //void drawNode() {
-  //stroke(255, 0, 0); //cyan
-  //strokeWeight(1.0); 
-  //line(start.x, start.y, end.x, end.y);
-  //}
+  void drawNode() {
+    pushMatrix();
+    translate(point.x, point.y);
+    fill(0,255,0);
+    ellipse(0, 0, 10, 10);
+    popMatrix();
+  }
 }

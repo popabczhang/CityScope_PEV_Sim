@@ -30,7 +30,7 @@ class Path {
 
   // Path Algorithm
 
-  int[] findPath(Spot start, Spot goal, Nodes nodes) {
+  int[] findPath(PVector startPt, PVector goalPt, Nodes nodes) {
     //int successorCount = 0;
     //int whileCount = 0;
 
@@ -46,15 +46,15 @@ class Path {
     Node end = null;
     // Finding the beginning node id
     for (Node node : nodes.allNodes) {
-      if (node.point == start.locationPt) {
+      if (node.point == startPt) {
         beginning = node;
       }
-      if (node.point == goal.locationPt) {
+      if (node.point == goalPt) {
         end = node;
       }
     }
 
-    PVector destinationPt = goal.locationPt;
+    PVector destinationPt = goalPt;
     Node parent = null;
     if (beginning == null) {
       println("Beginning node not found in all nodes");
@@ -89,17 +89,17 @@ class Path {
     }
   }
   //Actually returning path (ArrayList of PVectors)
-  ArrayList <PVector> pathFromParentArray(int [] parentArray, Spot start, Spot goal) {
+  ArrayList <PVector> pathFromParentArray(int [] parentArray, PVector startPt, PVector goalPt) {
     ArrayList<PVector> finalPath = new ArrayList <PVector>();
-    PVector destinationPt = goal.locationPt;
+    PVector destinationPt = goalPt;
     Node current = null;
     Node beginning = null;
     // Finding the final node id
     for (Node node : nodes.allNodes) {
-      if (node.point == goal.locationPt) {
+      if (node.point == goalPt) {
         current = node;
       }
-      if (node.point == start.locationPt) {
+      if (node.point == startPt) {
         beginning = node;
       }
     }
@@ -114,7 +114,11 @@ class Path {
         finalPath.add(current.point);
       }
       //println(finalPath);
-      return finalPath;
+      ArrayList <PVector> inOrderPath = new ArrayList<PVector>();
+      for (int i = finalPath.size()-1; i >= 0; i -= 1){
+      inOrderPath.add(finalPath.get(i));
+      }
+      return inOrderPath;
     }
   }
   void addNodeToPath(Node node) {
