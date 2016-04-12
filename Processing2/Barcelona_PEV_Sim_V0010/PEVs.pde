@@ -81,12 +81,14 @@ class PEVs {
     float min = 1000000.0;
     float temp = 0.0;
     for (int i = 0; i <= PEVs.size()-1; i++) {
-      temp = PVector.dist(PEVs.get(i).locationPt, location);
-      if (temp < min) {
-        min = temp;
-        answer = i;
+      if (PEVs.get(i).action == "wandering") {
+        temp = PVector.dist(PEVs.get(i).locationPt, location);
+        if (temp < min) {
+          min = temp;
+          answer = i;
+        }
       }
     }
-    return answer;
+      return answer;
   }
 }

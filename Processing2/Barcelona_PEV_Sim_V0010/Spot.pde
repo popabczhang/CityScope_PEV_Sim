@@ -6,13 +6,14 @@
 class Spot {
 
   //int id; //PEV agent id
-  int status; //0 = Pick Up, 1 = Location
+  int status; //0 = Pick Up, 1 = Destination
   //int roadID; //the road the PEV is currently on
   Road road; //current road object
   float t; //t location of the current road;
   PVector locationPt; //location coordination on the canvas
   PVector locationTangent;
   float speedT; //current speed; units: t per frame
+  boolean drawn;
 
   Spot(Road _road, float _t) {
     //id = _id;
@@ -23,6 +24,7 @@ class Spot {
     status = int(random(0, 2));
     locationPt = road.getPt(t);
     speedT = 0; //speedT unit: t per frame
+    drawn = true;
   }
   void run() {
 

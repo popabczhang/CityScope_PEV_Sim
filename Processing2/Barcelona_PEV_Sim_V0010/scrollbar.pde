@@ -3,8 +3,8 @@
 // Log:
 // 160118 - add screenScale factor
 
-HScrollbar[] hs = new HScrollbar[2];//
-String[] labels =  {"SCORE_1", "SCORE_2"};
+HScrollbar[] hs = new HScrollbar[3];//
+String[] labels =  {"SCORE_1", "SCORE_2","SCORE_3"};
 
 int x = 10;
 int y = 30;
@@ -19,9 +19,11 @@ void setupScrollbars() {
   //}
   hs[0] = new HScrollbar(156, 708, w, h, l);
   hs[1] = new HScrollbar(156, 732, w, h, l);
+  hs[2] = new HScrollbar(156, 760, w, h, l);
 
   hs[0].setPos(ScrollbarRatioPEVNum);
   hs[1].setPos(ScrollbarRatioPEVSpeed);
+  hs[2].setPos(ScrollbarRatioProb);
 }
 
 void drawScrollbars() {
@@ -30,6 +32,7 @@ void drawScrollbars() {
 
   ScrollbarRatioPEVNum = hs[0].getPos()*1.0;
   ScrollbarRatioPEVSpeed = hs[1].getPos()*1.0;
+  ScrollbarRatioProb = hs[2].getPos()*1.0;
 
 
   for (int i = 0; i < hs.length; i++) {

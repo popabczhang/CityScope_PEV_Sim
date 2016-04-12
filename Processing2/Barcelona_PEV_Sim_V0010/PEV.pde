@@ -24,12 +24,13 @@ class PEV {
   float rotation; //rotation in radius on the canvas
   float speedT; //current speed; units: t per frame
   PImage img_PEV;
-  ArrayList <PVector> inRoutePath = new ArrayList <PVector>();
-  ArrayList <PVector> deliveringPath = new ArrayList <PVector>();
+  Path inRoutePath;
+  Path deliveringPath;
   float speedIRP = 0.0;
   float speedDP = 0.0;
   int inRoutePathCount = 0;
   int deliveringPathCount = 0;
+  Nodes nodes = new Nodes();
 
   PEV(Road _road, float _t) {
     //id = _id;
@@ -41,7 +42,8 @@ class PEV {
     locationPt = road.getPt(t);
     speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
     img_PEV = imgs_PEV.get(0);
-    inRoutePath = null;
+    inRoutePath = new Path(nodes);
+    deliveringPath = new Path(nodes);
   }
 
   void run() {
@@ -52,10 +54,12 @@ class PEV {
     //} else {
     //  move3();
     //}
-    if (inRoutePath == null && deliveringPath == null) {
-    getRotation();
-    } else {
+    if (action == "wandering") {
+      getRotation();
+    } else if (action == "inRoute") {
       getRotation2();
+    } else if (action == "delivering") {
+      getRotation3();
     }
 
     //changeState();
@@ -64,7 +68,48 @@ class PEV {
   }
 
   void move() {
-    if (inRoutePath == null && deliveringPath == null) {
+    if (action == "delivering") {
+      if (deliveringPathCount<deliveringPath.pathOfNodes.size()-1) {
+        makeFull();
+        action = "delivering";
+        locationPt = deliveringPath.pathOfNodes.get(deliveringPathCount);
+        deliveringPathCount +=1;
+      } else {
+        action = "wandering";
+        makeEmpty();
+        PVector end = deliveringPath.pathOfNodes.get(deliveringPathCount);
+        deliveringPathCount = 0;
+        deliveringPath.pathOfNodes = null;
+        for (Road road2 : roads.roads) {
+          for (PVector roadPt : road2.roadPts) {
+            int count = 0;
+            if (roadPt == end) {
+              road = road2;
+              t = count/road.roadPts.length;
+            }
+            count += 1;
+          }
+        }
+
+        //for (Spot spot : Spots.Spots) {
+        //  int c = 0;
+        //  if (spot.locationPt == end || spot.locationPt == deliveringPath.pathOfNodes.get(0)) {
+        //    Spots.Spots.remove(c);
+        //  }
+        //  c ++;
+        //}
+      }
+    } else if (action == "inRoute") {
+      if (inRoutePathCount<inRoutePath.pathOfNodes.size()-1) {
+        action = "inRoute";
+        locationPt = inRoutePath.pathOfNodes.get(inRoutePathCount);
+        inRoutePathCount+=1;
+      } else {
+        action = "delivering";
+        inRoutePathCount = 0;
+        inRoutePath.pathOfNodes = null;
+      }
+    } else if (action == "wandering") {
       // update the speed according to frameRate
       speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
 
@@ -113,39 +158,6 @@ class PEV {
         t = 0.0;
       }
     }
-    
-    else if (inRoutePath != null) {
-      if (inRoutePathCount<inRoutePath.size()) {
-        locationPt = inRoutePath.get(inRoutePathCount);
-        speedIRP += 1.0/60;
-        inRoutePathCount = 1 + int(speedIRP);
-      } else {
-        inRoutePathCount = 0;
-        inRoutePath = null;
-      }
-    } else if (deliveringPath != null) {
-      if (deliveringPathCount<deliveringPath.size()) {
-        locationPt = deliveringPath.get(deliveringPathCount);
-        //speedDP = 1.0/60;
-        deliveringPathCount = 1 + int(speedDP);
-      } else {
-        deliveringPathCount = 0;
-        deliveringPath = null;
-      }
-    }
-  
-  }
-
-  void moveInRoute(ArrayList<PVector> path){
-    if (inRoutePathCount > path.size()){
-      inRoutePathCount = 0;
-      path = null;
-      action = "delivering";
-    }
-  else{
-      locationPt = path.get(inRoutePathCount);
-      inRoutePathCount += 1;
-    }
   }
 
   void getRotation() {
@@ -173,29 +185,26 @@ class PEV {
   }
 
 
-  //When PEV is not wandering
+  //When PEV is in Route to pickup
   void getRotation2() {
     // get rotation
-    locationTangent = road.getTangentVector(t);
+    locationTangent = inRoutePath.getTangentVector(inRoutePathCount);
     rotation = PVector.angleBetween(new PVector(1.0, 0.0, 0.0), locationTangent);
     if (locationTangent.y < 0) {
       rotation = -rotation;
     }
-
-    //// drawn tangent
-    //stroke(255, 255, 255);
-    //strokeWeight(0.5F);
-    //PVector v1 = locationTangent.setMag(50);
-    //PVector v2 = PVector.sub(locationPt,v1);
-    //PVector v3 = locationTangent.setMag(100);
-    //PVector v4 = PVector.add(locationPt,v3);
-    //line(v2.x, v2.y, v4.x, v4.y);
-
-    //println("locationPt: " + locationPt);
-    //println("locationNextPt: " + locationNextPt);
-    //println("subPVector: " + subPVector);
-    //println("rotation: " + rotation);
   }
+
+  //When PEV is delivering
+  void getRotation3() {
+    // get rotation
+    locationTangent = deliveringPath.getTangentVector(deliveringPathCount);
+    rotation = PVector.angleBetween(new PVector(1.0, 0.0, 0.0), locationTangent);
+    if (locationTangent.y < 0) {
+      rotation = -rotation;
+    }
+  }
+
   void changeState() {
     float rnd = random(0.0, 1.0);
     if (rnd <= stateChangeOdd) {
@@ -224,5 +233,9 @@ class PEV {
 
   void makeFull() {
     img_PEV = imgs_PEV.get(1);
+  }
+
+  void makeEmpty() {
+    img_PEV = imgs_PEV.get(0);
   }
 }

@@ -7,13 +7,13 @@
 class Path {
   ArrayList <Road> Roads;
   String roadPtFile;
-  ArrayList <Node> pathOfNodes;
+  ArrayList <PVector> pathOfNodes;
   boolean pathPresent = false;
-  float roadConnectionTolerance = 10.0; //pxl; smaller than 1.0 will cause error
+  float roadConnectionTolerance = .75; //pxl; smaller than 1.0 will cause error
   int infinity = 999999999;
 
   Path(Nodes nodes) {
-    pathOfNodes = new ArrayList <Node>();
+    pathOfNodes = new ArrayList <PVector>();
   }
 
   // Successors function
@@ -23,7 +23,7 @@ class Path {
       if (PVector.dist(parent.point, child.point) <= roadConnectionTolerance) {
         successorNodes.add(child);
       }
-    } 
+    }
     return successorNodes;
   }
 
@@ -115,14 +115,12 @@ class Path {
       }
       //println(finalPath);
       ArrayList <PVector> inOrderPath = new ArrayList<PVector>();
-      for (int i = finalPath.size()-1; i >= 0; i -= 1){
-      inOrderPath.add(finalPath.get(i));
+      for (int i = finalPath.size()-1; i >= 0; i -= 1) {
+        inOrderPath.add(finalPath.get(i));
       }
-      return inOrderPath;
+      pathOfNodes = inOrderPath;
+      return pathOfNodes;
     }
-  }
-  void addNodeToPath(Node node) {
-    pathOfNodes.add(node);
   }
 
   void drawAllPaths() {
@@ -141,4 +139,34 @@ class Path {
       line(path.get(i).x, path.get(i).y, path.get(i+1).x, path.get(i+1).y);
     }
   }
+
+  void drawPath2(ArrayList <PVector> path) {
+    stroke(0, 255, 0);
+    fill(0, 255, 0);
+    for (PVector p : path) {
+      ellipse(p.x, p.y, 10, 10);
+    }
+  }
+  
+  PVector getTangentVector(int _n) {
+    int n = _n;
+    int l = pathOfNodes.size();
+    if ( n < 0 || n >= l ) {
+      println("\"n\" out of range!");
+      return null;
+    } else if (n == l - 1) {
+      PVector v1 = pathOfNodes.get(n-1);
+      PVector v2 = pathOfNodes.get(n);
+      PVector v3 = PVector.sub(v2, v1);
+      v3.normalize();
+      return  v3;
+    } else {
+      PVector v1 = pathOfNodes.get(n);
+      PVector v2 = pathOfNodes.get(n+1);
+      PVector v3 = PVector.sub(v2, v1);
+      v3.normalize();
+      return  v3;
+    }
+  }
+
 }

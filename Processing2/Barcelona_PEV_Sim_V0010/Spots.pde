@@ -9,7 +9,7 @@ class Spots {
 
   ArrayList<Spot> Spots;
   //int currentPEVID;
-
+  boolean pickup = true;
   Spots() {
     Spots = new ArrayList<Spot>();
   }
@@ -23,13 +23,22 @@ class Spots {
       float t = random(0.0, 0.75);
       //PEV tmpPEV = new PEV(currentPEVID, tmpRoadID, t);
       Spot tmpSpot = new Spot(tmpRoad, t);
+      if (pickup) {
+        tmpSpot.status = 0;
+      }
+      if (pickup == false) {
+        tmpSpot.status = 1;
+      }
       Spots.add(tmpSpot);
+      pickup = !pickup;
     }
   }
 
   void run() {
     for (Spot Spot : Spots) {
-      Spot.run();
+      if (Spot.drawn) {
+        Spot.run();
+      }
     }
   }
 
@@ -45,18 +54,17 @@ class Spots {
     Spots.add(tmpSpot);
   }
 
-  void removeRandomly() {
-    int n = int(random(0, Spots.size()-1));
+  void removeSpot(int n) {
     Spots.remove(n);
   }
 
-  void changeToTargetNum(int _targetNum) {
-    int tn = _targetNum;
-    int cn = Spots.size();
-    if (cn>tn) {
-      removeRandomly();
-    } else if (cn<tn) {
-      addRandomly();
-    }
-  }
+  //void changeToTargetNum(int _targetNum) {
+  // int tn = _targetNum;
+  //  int cn = Spots.size();
+  //  if (cn>tn) {
+  //    removeRandomly();
+  //  } else if (cn<tn) {
+  //    addRandomly();
+  //  }
+  //}
 }

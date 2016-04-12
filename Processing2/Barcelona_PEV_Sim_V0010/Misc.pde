@@ -51,16 +51,16 @@ pickups = new Spots();
   
   
   void move2() {
-    if (inRoutePath != null) {
+    if (inRoutePath.pathOfNodes != null) {
       // update the speed according to frameRate
       speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-      if (inRoutePathCount > inRoutePath.size()-1) {
-        inRoutePath = null;
+      if (inRoutePathCount > inRoutePath.pathOfNodes.size()-1) {
+        inRoutePath.pathOfNodes = null;
         inRoutePathCount = 0;
       } else {
 
         // calc the next step
-        if (inRoutePath.get(inRoutePathCount) == road.getPt(t+speedT)) {
+        if (inRoutePath.pathOfNodes.get(inRoutePathCount) == road.getPt(t+speedT)) {
           t = t + speedT;
         } else {
           t = t - speedT;
@@ -84,8 +84,8 @@ pickups = new Spots();
             //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
             //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
             float min = 1000.0;
-            if (PVector.dist(inRoutePath.get(inRoutePathCount), tmpRoadStartPt) < min ) {
-              min = PVector.dist(inRoutePath.get(inRoutePathCount), tmpRoadStartPt);
+            if (PVector.dist(inRoutePath.pathOfNodes.get(inRoutePathCount), tmpRoadStartPt) < min ) {
+              min = PVector.dist(inRoutePath.pathOfNodes.get(inRoutePathCount), tmpRoadStartPt);
               closest = tmpRoad;
             }
           }
@@ -105,16 +105,16 @@ pickups = new Spots();
     }
   }
   void move3() {
-    if (deliveringPath != null) {
+    if (deliveringPath.pathOfNodes != null) {
       // update the speed according to frameRate
       speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-      if (deliveringPathCount > deliveringPath.size()-1) {
-        deliveringPath = null;
+      if (deliveringPathCount > deliveringPath.pathOfNodes.size()-1) {
+        deliveringPath.pathOfNodes = null;
         deliveringPathCount = 0;
       } else {
 
         // calc the next step
-        if (deliveringPath.get(deliveringPathCount) == road.getPt(t+speedT)) {
+        if (deliveringPath.pathOfNodes.get(deliveringPathCount) == road.getPt(t+speedT)) {
           t = t + speedT;
         } else {
           t = t - speedT;
@@ -138,8 +138,8 @@ pickups = new Spots();
             //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
             //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
             float min = 1000.0;
-            if (PVector.dist(deliveringPath.get(deliveringPathCount), tmpRoadStartPt) < min ) {
-              min = PVector.dist(deliveringPath.get(deliveringPathCount), tmpRoadStartPt);
+            if (PVector.dist(deliveringPath.pathOfNodes.get(deliveringPathCount), tmpRoadStartPt) < min ) {
+              min = PVector.dist(deliveringPath.pathOfNodes.get(deliveringPathCount), tmpRoadStartPt);
               closest = tmpRoad;
             }
           }
@@ -160,6 +160,18 @@ pickups = new Spots();
   }
   
   
+  // Creating Paths
+
+  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ) {
+    paths = new ArrayList<ArrayList<PVector>>();
+    int numberOfPaths = 0;
+    if (pickups.Spots.size() < destinations.Spots.size()) {
+      numberOfPaths = pickups.Spots.size();
+    } else {
+      numberOfPaths = destinations.Spots.size();
+    }
+    println(numberOfPaths);
+  }
   
   
   
@@ -168,29 +180,42 @@ pickups = new Spots();
   
   
   
-  
-  else if (inRoutePath != null) {
-      if (inRoutePathCount<inRoutePath.size()) {
-        locationPt = inRoutePath.get(inRoutePathCount);
+  else if (inRoutePath.pathOfNodes != null) {
+      if (inRoutePathCount<inRoutePath.pathOfNodes.size()) {
+        locationPt = inRoutePath.pathOfNodes.get(inRoutePathCount);
         speedIRP += 1.0/60;
         inRoutePathCount = inRoutePathCount + int(speedIRP);
       } else {
         inRoutePathCount = 0;
         //inRoutePath = null;
       }
-    } else if (deliveringPath != null) {
-      if (deliveringPathCount<deliveringPath.size()) {
-        locationPt = deliveringPath.get(deliveringPathCount);
+    } else if (deliveringPath.pathOfNodes != null) {
+      if (deliveringPathCount<deliveringPath.pathOfNodes.size()) {
+        locationPt = deliveringPath.pathOfNodes.get(deliveringPathCount);
         speedDP += 1.0/60;
         deliveringPathCount = deliveringPathCount + int(speedDP);
       } else {
         deliveringPathCount = 0;
-        //deliveringPath = null;
+        //deliveringPath.pathOfNodes = null;
       }
     }
   
   
-  
+    // Checking how many pairs of pickups and destinations exist
+
+  for (Spot spot : Spots.Spots) {
+    if (spot.status == 0) {
+      pickups.addSpot(spot);
+    }
+
+    if (spot.status == 1) {
+      destinations.addSpot(spot);
+    }
+  }
+  println(pickups.Spots.size());
+  //println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
+  println(destinations.Spots.size());
+
   
   
   
