@@ -24,7 +24,7 @@ Spots Spots;
 boolean drawRoads = false;
 boolean drawPath = false;
 boolean drawTest = false;
-ArrayList <ArrayList<PVector>> paths;
+ArrayList <Path> paths;
 Path path;
 Spots pickups;
 Spots destinations;
@@ -41,6 +41,7 @@ int totalSpots = 0;
 int pickupsIndex = 0;
 int destinationsIndex = 0;
 ArrayList <PVector> test, test2;
+boolean add = true;
 void setup() {
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
@@ -76,7 +77,7 @@ void setup() {
   //add Pickup Spots
   Spots = new Spots();
   //Spots.initiate(totalSpotNum);
-  paths = new ArrayList<ArrayList<PVector>>();
+  paths = new ArrayList<Path>();
 
 
   pickups = new Spots();
@@ -86,13 +87,12 @@ void setup() {
   path = new Path(nodes);
 }
 void draw() {
-
   time += 1;
   //println("Pickups Size:" + pickups.Spots.size());
   //println("Destinations Size:" + destinations.Spots.size());
   // Getting a PEV to "pick up package"
 
-  if (time % 300 == 0) {
+  if (add && time % 60 == 0) {
 
     int prob = int(random(0, 100));
     if (prob <= ScrollbarRatioProb) {
@@ -120,6 +120,7 @@ void draw() {
 
     while (pickups.Spots.size() > currentJob && destinations.Spots.size() > currentJob) {
       // Moving to starting location path
+      add = false;
       currentPEVs.add(PEVs.findNearestPEV(pickups.Spots.get(currentJob).locationPt));
       PEVs.PEVs.get(currentPEVs.get(currentJob)).action = "inRoute";
       int [] p = path.findPath(PEVs.PEVs.get(currentPEVs.get(currentJob)).locationPt, pickups.Spots.get(currentJob).locationPt, nodes);
@@ -132,18 +133,24 @@ void draw() {
       int [] p2 = path.findPath(pickups.Spots.get(currentJob).locationPt, destinations.Spots.get(currentJob).locationPt, nodes);
       PEVs.PEVs.get(currentPEVs.get(currentJob)).deliveringPath.pathOfNodes = path.pathFromParentArray(p2, pickups.Spots.get(currentJob).locationPt, destinations.Spots.get(currentJob).locationPt);
       //test2 = PEVs.PEVs.get(currentPEV).deliveringPath.pathOfNodes;
-      paths.add(PEVs.PEVs.get(currentPEVs.get(currentJob)).deliveringPath.pathOfNodes);
+      Path temp = new Path(nodes);
+      temp.pathOfNodes = PEVs.PEVs.get(currentPEVs.get(currentJob)).deliveringPath.pathOfNodes;
+      temp.drawn = true;
+      paths.add(temp);
       currentJob += 1;
       presenceOfPath = true;
     }
-    if (currentPEVs.size() > 0) {
+  }
+  
+  if (currentPEVs.size() > 0) {
       int s = 0;
       for (int job : currentPEVs) {
-        if (PEVs.PEVs.get(job).action == "wandering") {
+        if (PEVs.PEVs.get(job).action == "wandering" && Spots.Spots.get(s).drawn) {
           Spots.Spots.get(s).drawn = false;
           Spots.Spots.get(s+1).drawn = false;
-          println(s);
-          println("Removed");
+          paths.get(s/2).drawn = false;
+          add = true;
+          //println("Removed");
           
           // 1, 2,3,4
           // 0,1,2,3,4,5,6,7
@@ -151,7 +158,6 @@ void draw() {
         s = s + 2;
       }
     }
-  }
   scale(screenScale);
   background(0);
 
@@ -176,9 +182,10 @@ void draw() {
 
 
 
-  if (drawPath && presenceOfPath) {
-    for (ArrayList<PVector> eachPath : paths) {
-      path.drawPath(eachPath);
+  if (presenceOfPath) {
+    for (Path eachPath : paths) {
+      if (eachPath.drawn)
+      path.drawPath(eachPath.pathOfNodes);
     }
   }
 

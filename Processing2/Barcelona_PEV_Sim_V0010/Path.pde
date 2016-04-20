@@ -11,6 +11,7 @@ class Path {
   boolean pathPresent = false;
   float roadConnectionTolerance = .75; //pxl; smaller than 1.0 will cause error
   int infinity = 999999999;
+  boolean drawn = false;
 
   Path(Nodes nodes) {
     pathOfNodes = new ArrayList <PVector>();
